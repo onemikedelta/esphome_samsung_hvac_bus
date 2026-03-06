@@ -72,7 +72,7 @@ namespace esphome
             if (!tracker.has_previous_update)
             {
                 tracker.last_power_w = current_power_w;
-                tracker.last_update_time_ms = ;
+                tracker.last_update_time_ms = now;
                 tracker.has_previous_update = true;
                 return false; // No energy calculated on first update
             }
@@ -1091,5 +1091,6 @@ namespace esphome
         }
     } // namespace samsung_ac
 } // namespace esphome
+
 
 
