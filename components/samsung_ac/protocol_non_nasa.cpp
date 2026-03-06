@@ -756,31 +756,36 @@ namespace esphome
 
         void send_register_controller(MessageTarget *target)
         {
-            LOGD("Sending controller registration request...");
+            static uint32_t lastRegReq = millis();
+            if(millis() - lastRegReq > 3000)
+            {
+                LOGD("Sending controller registration request...");
 
-            // Registers our device as a "controller" with the outdoor unit. This will cause the
-            // outdoor unit to poll us with a request_control message approximately every second,
-            // which we can reply to with a control message if required.
-            std::vector<uint8_t> data{
-                0x32, // 00 start
-                0xD0, // 01 src
-                0xc8, // 02 dst
-                0xD1, // 03 cmd (register_device)
-                0xD2, // 04 device_type (controller)
-                0,    // 05
-                0,    // 06
-                0,    // 07
-                0,    // 08
-                0,    // 09
-                0,    // 10
-                0,    // 11
-                0,    // 12 crc
-                0x34  // 13 end
-            };
-            data[12] = build_checksum(data);
-
-            // Send now
-            target->publish_data(0, std::move(data));
+                // Registers our device as a "controller" with the outdoor unit. This will cause the
+                // outdoor unit to poll us with a request_control message approximately every second,
+                // which we can reply to with a control message if required.
+                std::vector<uint8_t> data{
+                    0x32, // 00 start
+                    0xD0, // 01 src
+                    0xc8, // 02 dst
+                    0xD1, // 03 cmd (register_device)
+                    0xD2, // 04 device_type (controller)
+                    0,    // 05
+                    0,    // 06
+                    0,    // 07
+                    0,    // 08
+                    0,    // 09
+                    0,    // 10
+                    0,    // 11
+                    0,    // 12 crc
+                    0x34  // 13 end
+                };
+                data[12] = build_checksum(data);
+    
+                // Send now
+                target->publish_data(0, std::move(data));
+                lastRegReq = millis();
+            }
         }
 
         void process_non_nasa_packet(MessageTarget *target)
@@ -1045,6 +1050,7 @@ namespace esphome
 
             // If we're not currently registered, keep sending a registration request until it has
             // been confirmed by the outdoor unit.
+            const uint32_t now = millis();
             if (!controller_registered)
             {
                 send_register_controller(target);
@@ -1086,3 +1092,4 @@ namespace esphome
         }
     } // namespace samsung_ac
 } // namespace esphome
+
