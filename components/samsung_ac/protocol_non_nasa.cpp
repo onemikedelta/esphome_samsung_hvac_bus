@@ -72,7 +72,7 @@ namespace esphome
             if (!tracker.has_previous_update)
             {
                 tracker.last_power_w = current_power_w;
-                tracker.last_update_time_ms = now;
+                tracker.last_update_time_ms = ;
                 tracker.has_previous_update = true;
                 return false; // No energy calculated on first update
             }
@@ -1050,7 +1050,6 @@ namespace esphome
 
             // If we're not currently registered, keep sending a registration request until it has
             // been confirmed by the outdoor unit.
-            const uint32_t now = millis();
             if (!controller_registered)
             {
                 send_register_controller(target);
@@ -1092,4 +1091,5 @@ namespace esphome
         }
     } // namespace samsung_ac
 } // namespace esphome
+
 
